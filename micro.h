@@ -2,7 +2,7 @@
 #define MICRO_H
 
 typedef enum {
-	OP_EQ, 	// =	0
+	OP_EQ, 	// :=	0
 	OP_ADD,	// +	1
 	OP_SUB,	// -	2
 	OP_MUL, // *	3
@@ -65,8 +65,10 @@ const char *keys[] = {"if", "else", "else if", "then", "while", "do", "var", "pr
 const char *num[] = {"integer", "real", NULL};
 const char *comp[] = {"=", ">", ">=", "<", "<=", "<>", NULL};
 const char *simb[] = {"{", "}", "(", ")", ",", ";", NULL};
+const char *oper[] = {":=", "+", "-", "*", "/", NULL};
 
-const char * const *toks[] = {keys, num, comp, simb};
+//NUNCA MUDE A ORDEM DESTES VALORES!!!
+const char * const *toks[] = {keys, num, comp, simb, oper};
 
 char *token_typeid_s(Token_ID ID);	//Retorna uma string que representa o token. Ex: "=" ou "int".
 char *token_type_s(Token_TYPE type);

@@ -12,77 +12,79 @@ int main () {
 	FILE *lex = fopen("trim.lex", "w");
 
 	char string [256] = "";
-	char pascal;
-
-	pascal = fgetc(codigo);
-
-	Token token = {
-		NIL,
-		DEFAULT,
-		""
-	};
-
-	printf("%d\n\n", sizeof(keys) / 8);
+	char pascal = ' ';
 
 	while (pascal != EOF) {
+		pascal = fgetc(codigo);
 
-
-		if (isspace(pascal)) {
-			pascal = fgetc(codigo);
-			continue;
+		Token token = {
+			NIL,
+			DEFAULT,
+			""
 		};
 
-		if (isalpha(pascal)) {
-			do {
+		if (isspace(pascal)) continue;
 
-				const char *pointer = &pascal;
+		if (isalpha(pascal)) {
+			const char *pointer = &pascal;
+			do {
 				strcat(token.valor, pointer);
 				pascal = fgetc(codigo);
 			} while (isalpha(pascal));
-				token.ID = token_comp(token.valor);
-				token.TYPE = token_type(token.ID);
-				printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
-				strcpy(token.valor, "");
-				continue;
+				
+			token.ID = token_comp(token.valor);
+			token.TYPE = token_type(token.ID);
+			printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
+			continue;
 		}
 		else if (isdigit(pascal)) {
+
+			token.TYPE = NUMERO;
+
+			const char *pointer = &pascal;
 			do {
-				const char *pointer = &pascal;
 				strcat(token.valor, pointer);
 				pascal = fgetc(codigo);
 			} while (isdigit(pascal));
-				token.ID = token_comp(token.valor);
-				token.TYPE = token_type(token.ID);
-				printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
-				strcpy(token.valor, "");
+
+			if (pascal == '.') {
+				token.ID = NUM_FLT;
+				do {
+					strcat(token.valor, pointer);
+					pascal = fgetc(codigo);
+				} while (isdigit(pascal));
+				if (pascal == '.') {
+					printf ("O NUMERO [%s] NAO PODE TER DOIS PONTOS!\n", token.valor);
+					return 1;
+				}
+			} else token.ID = NUM_INT;
+			if (isalpha(pascal)) {
+				printf("OCORREU UM ERRO AO IDENTIFICAR O NUMERO [%s]\nENCONTRADO LETRA AO EM VEZ DE DIGITO!\n", token.valor);
+				return 1;
+			}
+				printf("%s : %s | %s\n", token.valor, token_type_s(token.TYPE), token_typeid_s(token.ID));
 				continue;
 		}
 		else if (ispunct(pascal)) {
 			const char *pointer = &pascal;
 			strcat(token.valor, pointer);
+			if (pascal == ':') {
+				pascal = fgetc(codigo);
+				if (pascal == '=') {
+					token.ID = OP_EQ;
+					token.TYPE = OPERADOR;
+					strcat(token.valor, pointer);
+					printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
+					continue;
+				}
+			}
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
 			printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
-			pascal = fgetc(codigo);
-			strcpy(token.valor, "");
 			continue;
 		};
 
 		printf("%c\n", pascal);
-		pascal = fgetc(codigo);
-
-		/*	CODIGO MORTO! NAO VE!!!
-
-		printf("I saw [%s]\n", teste);	
-		if (strchr(teste, ' ') == NULL) {
-			string[strlen(string)] = teste[0];
-			printf("I copied [%s] And the string is [%s]\n", teste, string);	
-//			printf("%s\n", string);
-		}
-		else {
-			printf("%s\n", string);
-			strcpy(string, "");
-		};*/
 	};
 
 	return 0;

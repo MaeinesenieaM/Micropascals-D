@@ -95,7 +95,7 @@ Token_ID token_get(int id) {
 
 Token_ID token_comp(const char *string) {
 
-	Token_TYPE types[] = {CHAVE, NUMERO, COMPARADOR, SIMBOLO};
+	Token_TYPE types[] = {CHAVE, NUMERO, COMPARADOR, SIMBOLO, OPERADOR};
 
 	for (int i = 0; i < sizeof(toks) / 8; i++) {
 		for (int j = 0; toks[i][j] != NULL; j++) {

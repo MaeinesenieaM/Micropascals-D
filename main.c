@@ -38,6 +38,8 @@ int main (int argc, char* argv[]) {
 
 		start:
 
+		show_index(index);
+
 		token.ID = NIL;
 		token.TYPE = DEFAULT;
 		strcpy(token.valor, "\0");
@@ -54,6 +56,15 @@ int main (int argc, char* argv[]) {
 
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
+			
+			if (token.TYPE == IDENTIFICADOR) {
+				int pos = search_index(index, token.valor);
+				if (pos == -1) {
+					create_index(index, token.valor, NONE);
+				}
+				printf ("POS:%d\n", pos);				
+			}
+
 			token_print(lex, &token);
 			goto start;
 		}

@@ -115,7 +115,9 @@ Token_ID token_comp(const char *string) {
 int search_index(Index *list, const char *string) {
 	int count = 0;
 	while (list != NULL) {
-		count++
+		printf("AKI");
+		count++;
+
 		if (strcmp(string, list->ident) == 0) return count - 1;
 		list = list->next;
 	}
@@ -127,21 +129,32 @@ void change_index_t(Index *list, Index_TYPE type, int pos) {
 		list->next;
 		pos--;
 	};
-	next->TYPE = type;
+	list->TYPE = type;
 }
 
-void create_index(Index *list, const char *string, Index_TYPE type) {
-	Index *index = (Index*) malloc(sizeof(Index));
-	strcpy (index->ident, string);
-	if (type == NULL) index->TYPE = NONE;
-	else index->TYPE = type;
-	index->next = NULL;
+void create_index(Index *list, const char *string, Index_TYPE type) {	
 
+	if (list == NULL) {
+		list = (Index*) malloc(sizeof(Index));
+		strcpy (list->ident, string);
+		list->TYPE = type;
+		list->next = NULL;
+	}
+	Index *temp = (Index*) malloc(sizeof(Index));
+	strcpy (temp->ident, string);
+	temp->TYPE = type;
+	temp->next = NULL;
 	while (list->next != NULL) list = list->next;
-	list->next = index;
+	list->next = temp;
 }
 
-void c
+void show_index(Index *list) {
+	while (list != NULL) {
+		printf ("%s", list->ident);
+		if (list->next == NULL) break;
+		list = list->next;
+	}
+}
 
 void token_print(FILE *file, Token *token) {
 	fprintf(file, "<%d|%s|%s>\n", token->ID, token_typeid_s(token->ID), token_type_s(token->TYPE));

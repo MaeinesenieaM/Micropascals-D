@@ -94,6 +94,6 @@ Token_ID token_comp(const char *string); //Compara com o todos tipos de strings 
 
 void token_print(FILE *file, Token *token);
 
-int search_index(const char *string);
+int search_index(Index *list, const char *string);
 
 #endif

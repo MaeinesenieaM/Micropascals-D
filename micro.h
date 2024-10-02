@@ -41,7 +41,7 @@ typedef enum {
 
 	IDENT,	 // identificador para valores ou funções.	29
 	LITER,   // literais para valores tipo string.		30
-	NIL		 // significa praticamente nada.			31
+	NIL,	 // significa praticamente nada.			31
 } Token_ID;
 
 typedef enum {
@@ -75,6 +75,8 @@ char *token_type_s(Token_TYPE type);
 Token_TYPE token_type(Token_ID ID);	//Retona o tipo do token.
 
 Token_ID token_get(int id); //Retorna o enum do ID. Se o ID estiver fora do alcance, retornara NIL.
-Token_ID token_comp(const char *string); //Compara com o todos tipos de chave e retorna o token correto. Caso contrario ira retornar IDENT.
+Token_ID token_comp(const char *string); //Compara com o todos tipos de strings e retorna o token correto. Caso contrario ira retornar IDENT.
+
+void token_print(FILE *file, Token *token);
 
 #endif

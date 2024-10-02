@@ -107,6 +107,7 @@ Token_ID token_comp(const char *string) {
 	return IDENT;
 
 	/*
+	Esse codigo faz basicamente oq ta escrito embaixo
 	for (int i = 0; i < sizeof(keys) / 8; i++) {
 		int diferenca = strcmp(string, keys[i]);
 		if (diferenca == 0) return token_get(i + IF);
@@ -125,4 +126,8 @@ Token_ID token_comp(const char *string) {
 	}
 	return IDENT;
 	*/
+}
+
+void token_print(FILE *file, Token *token) {
+	fprintf(file, "<%d:%d:%s>", token->ID, token->TYPE, token->valor);
 }

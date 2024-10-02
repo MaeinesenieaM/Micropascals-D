@@ -29,7 +29,9 @@ int main (int argc, char* argv[]) {
 
 	Token token;
 
-//	Index *index = (Index*) malloc(sizeof(Index));
+	Index *index = NULL;
+
+//(Index*) malloc(sizeof(Index))
 
 	while (pascal != EOF) {
 		pascal = fgetc(codigo);
@@ -49,6 +51,7 @@ int main (int argc, char* argv[]) {
 				strcat(token.valor, pointer);
 				pascal = fgetc(codigo);
 			} while (isalpha(pascal));
+
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
 			token_print(lex, &token);

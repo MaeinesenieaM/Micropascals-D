@@ -112,6 +112,37 @@ Token_ID token_comp(const char *string) {
 	return IDENT;
 }
 
+int search_index(Index *list, const char *string) {
+	int count = 0;
+	while (list != NULL) {
+		count++
+		if (strcmp(string, list->ident) == 0) return count - 1;
+		list = list->next;
+	}
+	return -1;
+}
+
+void change_index_t(Index *list, Index_TYPE type, int pos) {
+	while (pos > 0) {
+		list->next;
+		pos--;
+	};
+	next->TYPE = type;
+}
+
+void create_index(Index *list, const char *string, Index_TYPE type) {
+	Index *index = (Index*) malloc(sizeof(Index));
+	strcpy (index->ident, string);
+	if (type == NULL) index->TYPE = NONE;
+	else index->TYPE = type;
+	index->next = NULL;
+
+	while (list->next != NULL) list = list->next;
+	list->next = index;
+}
+
+void c
+
 void token_print(FILE *file, Token *token) {
 	fprintf(file, "<%d|%s|%s>\n", token->ID, token_typeid_s(token->ID), token_type_s(token->TYPE));
 	printf("<%d|%s|%s>\n", token->ID, token_typeid_s(token->ID), token_type_s(token->TYPE));

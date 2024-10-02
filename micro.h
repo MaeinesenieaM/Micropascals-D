@@ -63,6 +63,19 @@ typedef struct {
 	char valor[64];
 } Token;
 
+typedef enum {
+	INT,
+	REAL,
+	CHAR,
+	NONE
+} Index_TYPE;
+
+typedef struct Index {
+	char ident[64];
+	Index_TYPE TYPE;
+	struct Index *next;
+} Index;
+
 const char *keys[] = {"if", "else", "else if", "then", "while", "do", "var", "program", "begin", "end", NULL};
 const char *num[] = {"integer", "real", NULL};
 const char *comp[] = {"=", ">", ">=", "<", "<=", "<>", NULL};
@@ -80,5 +93,7 @@ Token_ID token_get(int id); //Retorna o enum do ID. Se o ID estiver fora do alca
 Token_ID token_comp(const char *string); //Compara com o todos tipos de strings e retorna o token correto. Caso contrario ira retornar IDENT.
 
 void token_print(FILE *file, Token *token);
+
+int search_index(const char *string);
 
 #endif

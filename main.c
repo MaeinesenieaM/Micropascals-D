@@ -64,6 +64,11 @@ int main (int argc, char* argv[]) {
 
 			if (pascal == '.') {
 				token.ID = NUM_FLT;
+				pascal = fgetc(codigo);
+				if (isdigit(pascal) == 0) {
+					printf ("%c NUMERO REAL INVALIDO! [%s] ESPERADO DIGITO!", pascal, token.valor);
+					return 1;
+				}
 				do {
 					char pointer[2] = {pascal, '\0'};
 					strcat(token.valor, pointer);

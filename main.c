@@ -29,6 +29,8 @@ int main (int argc, char* argv[]) {
 
 	Token token;
 
+//	Index *index = (Index*) malloc(sizeof(Index));
+
 	while (pascal != EOF) {
 		pascal = fgetc(codigo);
 
@@ -49,7 +51,6 @@ int main (int argc, char* argv[]) {
 			} while (isalpha(pascal));
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
-			printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
 			token_print(lex, &token);
 			goto start;
 		}
@@ -88,7 +89,6 @@ int main (int argc, char* argv[]) {
 				printf("OCORREU UM ERRO AO IDENTIFICAR O NUMERO [%s]\nENCONTRADO LETRA AO EM VEZ DE DIGITO!\n", token.valor);
 				return 1;
 			}
-				printf("%s : %s | %s\n", token.valor, token_type_s(token.TYPE), token_typeid_s(token.ID));
 				token_print(lex, &token);
 				continue;
 		}
@@ -103,14 +103,12 @@ int main (int argc, char* argv[]) {
 					token.TYPE = OPERADOR;
 					char pointer[2] = {pascal, '\0'};
 					strcat(token.valor, pointer);
-					printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
 					token_print(lex, &token);
 					continue;
 				}
 			}
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
-			printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
 			token_print(lex, &token);
 		};
 	};

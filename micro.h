@@ -25,6 +25,8 @@ typedef enum {
 
 	SMB_COM, // ,				17
 	SMB_SEM, // ;				18
+	SMB_PNT, // .
+	SMB_DPT, // :
 
 	//CHAVES
 	IF,		 //		19
@@ -64,7 +66,7 @@ typedef struct {
 const char *keys[] = {"if", "else", "else if", "then", "while", "do", "var", "program", "begin", "end", NULL};
 const char *num[] = {"integer", "real", NULL};
 const char *comp[] = {"=", ">", ">=", "<", "<=", "<>", NULL};
-const char *simb[] = {"{", "}", "(", ")", ",", ";", NULL};
+const char *simb[] = {"{", "}", "(", ")", ",", ";", ".", ":", NULL};
 const char *oper[] = {":=", "+", "-", "*", "/", NULL};
 
 //NUNCA MUDE A ORDEM DESTES VALORES!!!

@@ -29,6 +29,8 @@ char *token_typeid_s(Token_ID ID) {
 
 		case SMB_COM: return ",";
 		case SMB_SEM: return ";";
+		case SMB_PNT: return ".";
+		case SMB_DPT: return ":";
 
 		case IF:		return "if";
 		case ELSE:		return "else";
@@ -108,29 +110,9 @@ Token_ID token_comp(const char *string) {
 	}
 
 	return IDENT;
-
-	/*
-	Esse codigo faz basicamente oq ta escrito embaixo
-	for (int i = 0; i < sizeof(keys) / 8; i++) {
-		int diferenca = strcmp(string, keys[i]);
-		if (diferenca == 0) return token_get(i + IF);
-	};
-	for (int i = 0; i < sizeof(num) / 8; i++) {
-		int diferenca = strcmp(string, num[i]);
-		if (diferenca == 0) return token_get(i + NUM_INT);
-	}
-	for (int i = 0; i < sizeof(comp) / 8; i++) {
-		int diferenca = strcmp(string, num[i]);
-		if (diferenca == 0) return token_get(i + COMP_EQ);
-	}
-	for (int i = 0; i < sizeof(simb) / 8; i++) {
-		int diferenca = strcmp(string, simb[i]);
-		if (diferenca == 0) return token_get(i + SMB_OBC);
-	}
-	return IDENT;
-	*/
 }
 
 void token_print(FILE *file, Token *token) {
-	fprintf(file, "<%d:%d:%s>", token->ID, token->TYPE, token->valor);
+	fprintf(file, "<%d|%s|%s>\n", token->ID, token_typeid_s(token->ID), token_type_s(token->TYPE));
+	printf("<%d|%s|%s>\n", token->ID, token_typeid_s(token->ID), token_type_s(token->TYPE));
 }

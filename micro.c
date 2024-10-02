@@ -97,10 +97,13 @@ Token_ID token_comp(const char *string) {
 
 	Token_TYPE types[] = {CHAVE, NUMERO, COMPARADOR, SIMBOLO, OPERADOR};
 
-	for (int i = 0; i < sizeof(toks) / 8; i++) {
+	for (int i = 0; i < sizeof(toks) / 4; i++) {
+
 		for (int j = 0; toks[i][j] != NULL; j++) {
 			int diferenca = strcmp(string, toks[i][j]);
-			if (diferenca == 0) return token_get(j + token_type_id(types[i]));
+			if (diferenca == 0) {
+				 return token_get(j + token_type_id(types[i]));
+			}
 		}
 	}
 

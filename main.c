@@ -27,17 +27,20 @@ int main (int argc, char* argv[]) {
 
 	char pascal = ' ';
 
+	Token token;
+
 	while (pascal != EOF) {
 		pascal = fgetc(codigo);
 
-		Token token = {
-			NIL,
-			DEFAULT,
-			"\0"
-		};
+		start:
+
+		token.ID = NIL;
+		token.TYPE = DEFAULT;
+		strcpy(token.valor, "\0");
 
 		if (isspace(pascal)) continue;
 
+		//Isso aki ve se o valor da letra lida é letra.
 		if (isalpha(pascal)) {
 			do {
 				char pointer[2] = {pascal, '\0'};
@@ -48,9 +51,9 @@ int main (int argc, char* argv[]) {
 			token.TYPE = token_type(token.ID);
 			printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
 			token_print(lex, &token);
-
-			continue;
+			goto start;
 		}
+		//Isso aki ve se o valor da letra lida é digito.
 		else if (isdigit(pascal)) {
 
 			token.TYPE = NUMERO;
@@ -64,6 +67,8 @@ int main (int argc, char* argv[]) {
 
 			if (pascal == '.') {
 				token.ID = NUM_FLT;
+				char pointer[2] = {pascal, '\0'};
+				strcat(token.valor, pointer);
 				pascal = fgetc(codigo);
 				if (isdigit(pascal) == 0) {
 					printf ("%c NUMERO REAL INVALIDO! [%s] ESPERADO DIGITO!", pascal, token.valor);
@@ -87,6 +92,7 @@ int main (int argc, char* argv[]) {
 				token_print(lex, &token);
 				continue;
 		}
+		//Isso aki ve se o valor da letra lida é digito.
 		else if (ispunct(pascal)) {
 			char pointer[2] = {pascal, '\0'};
 			strcat(token.valor, pointer);
@@ -106,7 +112,6 @@ int main (int argc, char* argv[]) {
 			token.TYPE = token_type(token.ID);
 			printf("%s : %s\n", token.valor, token_type_s(token.TYPE));
 			token_print(lex, &token);
-			continue;
 		};
 	};
 

@@ -15,7 +15,9 @@ int main (int argc, char* argv[]) {
 
 	char arquivo[256] = "";
 	strcpy(arquivo, argv[1]);
-	if (strstr(arquivo, ".lex") == NULL) strcat(arquivo, ".pas");
+	if (strstr(arquivo, ".pas") == NULL) strcat(arquivo, ".pas");
+
+	printf("%s", arquivo);
 
 	FILE *codigo = fopen(arquivo, "r");
 	if (codigo == NULL) {
@@ -38,8 +40,6 @@ int main (int argc, char* argv[]) {
 
 		start:
 
-		show_index(index);
-
 		token.ID = NIL;
 		token.TYPE = DEFAULT;
 		strcpy(token.valor, "\0");
@@ -48,6 +48,7 @@ int main (int argc, char* argv[]) {
 
 		//Isso aki ve se o valor da letra lida é letra.
 		if (isalpha(pascal)) {
+
 			do {
 				char pointer[2] = {pascal, '\0'};
 				strcat(token.valor, pointer);
@@ -56,18 +57,23 @@ int main (int argc, char* argv[]) {
 
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
-			
+
 			if (token.TYPE == IDENTIFICADOR) {
 				int pos = search_index(index, token.valor);
 				if (pos == -1) {
-					create_index(index, token.valor, NONE);
+					create_index(&index, token.valor, NONE);
+					pos = search_index(index, token.valor);
 				}
-				printf ("POS:%d\n", pos);				
+				strcpy(token.valor, "");
+				sprintf(token.valor, "t%d", pos);
+
+				printf ("IDENT: %s POS:%d\n", token.valor, pos);				
 			}
 
 			token_print(lex, &token);
 			goto start;
 		}
+
 		//Isso aki ve se o valor da letra lida é digito.
 		else if (isdigit(pascal)) {
 
@@ -106,6 +112,7 @@ int main (int argc, char* argv[]) {
 				token_print(lex, &token);
 				continue;
 		}
+
 		//Isso aki ve se o valor da letra lida é digito.
 		else if (ispunct(pascal)) {
 			char pointer[2] = {pascal, '\0'};
@@ -120,12 +127,18 @@ int main (int argc, char* argv[]) {
 					token_print(lex, &token);
 					continue;
 				}
+				token.ID = token_comp(token.valor);
+				token.TYPE = token_type(token.ID);
+				goto start;
 			}
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
 			token_print(lex, &token);
 		};
 	};
+
+	printf("Tabela final de valores identificadores: ");
+	show_index(index);
 
 	return 0;
 }

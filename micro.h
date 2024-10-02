@@ -23,27 +23,27 @@ typedef enum {
 	SMB_OPA, // (				15
 	SMB_CPA, // )				16
 
-	SMB_COM, // ,				17
-	SMB_SEM, // ;				18
-	SMB_PNT, // .
-	SMB_DPT, // :
+	SMB_COM, // ,	17
+	SMB_SEM, // ;	18
+	SMB_PNT, // .	19
+	SMB_DPT, // :	20
 
 	//CHAVES
-	IF,		 //		19
-	ELSE,	 //		20
-	ELSE_IF, //		21
-	THEN,	 //		22
-	WHILE,	 //		23
-	DO,		 //		24
+	IF,		 //		21
+	ELSE,	 //		22
+	ELSE_IF, //		23
+	THEN,	 //		24
+	WHILE,	 //		25
+	DO,		 //		26
 
-	VAR,	 //		25
-	PROGRAM, //		26
-	BEGIN,	 //		27
-	END,	 //		28
+	VAR,	 //		27
+	PROGRAM, //		28
+	BEGIN,	 //		29
+	END,	 //		30
 
-	IDENT,	 // identificador para valores ou funções.	29
-	LITER,   // literais para valores tipo string.		30
-	NIL,	 // significa praticamente nada.			31
+	IDENT,	 // identificador para valores ou funções.	31
+	LITER,   // literais para valores tipo string.		32
+	NIL,	 // significa praticamente nada.			33
 } Token_ID;
 
 typedef enum {

@@ -91,7 +91,7 @@ Token_TYPE token_type(Token_ID ID);	//Retona o tipo do token.
 Token_ID token_get(int id); //Retorna o enum do ID. Se o ID estiver fora do alcance, retornara NIL.
 Token_ID token_comp(const char *string); //Compara com o todos tipos de strings e retorna o token correto. Caso contrario ira retornar IDENT.
 
-void token_print(FILE *file, Token *token);
+void token_print(FILE *file, Token *token); //responsavel por dar print no console e salvar o token em .lex
 
 int search_index(Index *list, const char *string);
 void change_index_t(Index *list, Index_TYPE type, int pos);
@@ -108,5 +108,7 @@ void token_print(FILE *file, Token *token);
 #define ERROR_LEX_PONTOS			102
 #define ERROR_LEX_LETRAEMNUMERO		103
 #define ERROR_LEX_SIMBOLOINV		104
+
+void print_error(int error, int linha, int coluna);
 
 #endif

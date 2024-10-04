@@ -4,7 +4,8 @@
 
 #include "micro.h"
 
-void print_error(int error, int coluna, int linha) {
+//Gerenciador de erros.
+void print_error(int error, int linha, int coluna) {
 	printf("!UM ERRO OCORREU NA LINHA [%d] COLUNA [%d]!\n", linha, coluna);
 
 	switch (error) {
@@ -15,13 +16,13 @@ void print_error(int error, int coluna, int linha) {
 			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
 			exit(ERROR_LEX_NAOREAL);
 		case ERROR_LEX_PONTOS:
-			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			printf ("NUMEROS NAO PODEM TER MAIS DE UM PONTO!");
 			exit(ERROR_LEX_PONTOS);
 		case ERROR_LEX_LETRAEMNUMERO:
-			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			printf ("OCORREU UM ERRO AO IDENTIFICAR O NUMERO!\nENCONTRADO LETRA AO EM VEZ DE DIGITO!");
 			exit(ERROR_LEX_LETRAEMNUMERO);
 		case ERROR_LEX_SIMBOLOINV:
-			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			printf ("OPERADOR OU SIMBOLO INVALIDO!");
 			exit(ERROR_LEX_SIMBOLOINV);
 	}
 }

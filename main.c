@@ -21,7 +21,7 @@ void getchar_plus(FILE **file, char *letra, int *cont) {
 
 int main (int argc, char* argv[]) {
 
-	int linha = 0, coluna = 0;
+	int linha = 1, coluna = 1;
 
 	if (argc < 2) {
 		printf("ARGUMENTOS INSUFICIENTE!\nTente executar o programa como:\n main.exe teste.pas ou main.exe teste");
@@ -47,26 +47,24 @@ int main (int argc, char* argv[]) {
 
 	getchar_plus(&codigo, &pascal, &coluna);
 
-//	pascal = fgetc(codigo);
-
 	while (pascal != EOF) {
-
-		start:
-
 		token.ID = NIL;
 		token.TYPE = DEFAULT;
 		strcpy(token.valor, "\0");
 
 		if (isspace(pascal)) {
-			if (pascal = '\n') linha++;
-			pascal = fgetc(codigo);
+			if (pascal == '\n') {
+				linha++;
+				coluna = 1;
+			}
+			getchar_plus(&codigo, &pascal, &coluna);
 		}
 
 		//Isso aki ve se o valor da letra lida é letra.
 		else if (isalpha(pascal)) {
 			do {
 				strcat_char(token.valor, pascal);
-				pascal = fgetc(codigo);
+				getchar_plus(&codigo, &pascal, &coluna);
 			} while (isalpha(pascal) || isdigit(pascal));
 
 			token.ID = token_comp(token.valor);
@@ -79,7 +77,7 @@ int main (int argc, char* argv[]) {
 					pos = search_index(index, token.valor);
 				}
 				strcpy(token.valor, "");
-				sprintf(token.valor, "t%d", pos);			
+				sprintf(token.valor, "t%d", pos); //Um print so que dentro de uma string.
 			}
 			token_print(lex, &token);
 		}
@@ -92,30 +90,21 @@ int main (int argc, char* argv[]) {
 			const char *pointer = &pascal;
 			do {
 				strcat_char(token.valor, pascal);
-				pascal = fgetc(codigo);
+				getchar_plus(&codigo, &pascal, &coluna);
 			} while (isdigit(pascal));
 
 			if (pascal == '.') {
 				token.ID = NUM_FLT;
 				strcat_char(token.valor, pascal);
-				pascal = fgetc(codigo);
-				if (isdigit(pascal) == 0) {
-					printf ("%c NUMERO REAL INVALIDO! [%s] ESPERANDO DIGITO!", pascal, token.valor);
-					return 1;
-				}
+				getchar_plus(&codigo, &pascal, &coluna);
+				if (isdigit(pascal) == 0) print_error(ERROR_LEX_NAOREAL, linha, coluna);
 				do {
 					strcat_char(token.valor, pascal);
-					pascal = fgetc(codigo);
+					getchar_plus(&codigo, &pascal, &coluna);
 				} while (isdigit(pascal));
-				if (pascal == '.') {
-					printf ("O NUMERO [%s] NAO PODE TER DOIS PONTOS!\n", token.valor);
-					return 1;
-				}
+				if (pascal == '.') print_error(ERROR_LEX_PONTOS, linha, coluna);
 			} else token.ID = NUM_INT;
-			if (isalpha(pascal)) {
-				printf("OCORREU UM ERRO AO IDENTIFICAR O NUMERO [%s]\nENCONTRADO LETRA AO EM VEZ DE DIGITO!\n", token.valor);
-				return 1;
-			}
+			if (isalpha(pascal)) print_error(ERROR_LEX_LETRAEMNUMERO, linha, coluna);
 				token_print(lex, &token);
 		}
 
@@ -123,16 +112,13 @@ int main (int argc, char* argv[]) {
 		else if (ispunct(pascal)) {
 			do {
 				strcat_char(token.valor, pascal);
-				pascal = fgetc(codigo);
+				getchar_plus(&codigo, &pascal, &coluna);
 			} while (ispunct(pascal));
 
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
 
-			if (token.TYPE == IDENTIFICADOR) {
-				printf("OPERADOR OU SIMBOLO INVALIDO!\n CORRIJA [%s]!", token.valor);
-				return 1;
-			}
+			if (token.TYPE == IDENTIFICADOR) print_error(ERROR_LEX_SIMBOLOINV, linha, coluna);
 
 			token_print(lex, &token);
 		};

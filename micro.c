@@ -34,7 +34,6 @@ char *token_typeid_s(Token_ID ID) {
 
 		case IF:		return "if";
 		case ELSE:		return "else";
-		case ELSE_IF:	return "else if";
 		case THEN:		return "then";
 		case WHILE:		return "while";
 		case DO:		return "do";

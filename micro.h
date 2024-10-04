@@ -31,19 +31,18 @@ typedef enum {
 	//CHAVES
 	IF,		 //		21
 	ELSE,	 //		22
-	ELSE_IF, //		23
-	THEN,	 //		24
-	WHILE,	 //		25
-	DO,		 //		26
+	THEN,	 //		23
+	WHILE,	 //		24
+	DO,		 //		25
 
-	VAR,	 //		27
-	PROGRAM, //		28
-	BEGIN,	 //		29
-	END,	 //		30
+	VAR,	 //		26
+	PROGRAM, //		27
+	BEGIN,	 //		28
+	END,	 //		29
 
-	IDENT,	 // identificador para valores ou funções.	31
-	LITER,   // literais para valores tipo string.		32
-	NIL,	 // significa praticamente nada.			33
+	IDENT,	 // identificador para valores ou funções.	30
+	LITER,   // literais para valores tipo string.		31
+	NIL,	 // significa praticamente nada.			32
 } Token_ID;
 
 typedef enum {
@@ -76,7 +75,7 @@ typedef struct Index {
 	struct Index *next;
 } Index;
 
-const char *keys[] = {"if", "else", "else if", "then", "while", "do", "var", "program", "begin", "end", NULL};
+const char *keys[] = {"if", "else", "then", "while", "do", "var", "program", "begin", "end", NULL};
 const char *num[] = {"integer", "real", NULL};
 const char *comp[] = {"=", ">", ">=", "<", "<=", "<>", NULL};
 const char *simb[] = {"{", "}", "(", ")", ",", ";", ".", ":", NULL};

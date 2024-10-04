@@ -35,8 +35,9 @@ int main (int argc, char* argv[]) {
 
 //(Index*) malloc(sizeof(Index))
 
+	pascal = fgetc(codigo);
+
 	while (pascal != EOF) {
-		pascal = fgetc(codigo);
 
 		start:
 
@@ -44,16 +45,18 @@ int main (int argc, char* argv[]) {
 		token.TYPE = DEFAULT;
 		strcpy(token.valor, "\0");
 
-		if (isspace(pascal)) continue;
+		if (isspace(pascal)) {
+			pascal = fgetc(codigo);
+		}
 
 		//Isso aki ve se o valor da letra lida é letra.
-		if (isalpha(pascal)) {
+		else if (isalpha(pascal)) {
 
 			do {
 				char pointer[2] = {pascal, '\0'};
 				strcat(token.valor, pointer);
 				pascal = fgetc(codigo);
-			} while (isalpha(pascal));
+			} while (isalpha(pascal) || isdigit(pascal));
 
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
@@ -71,7 +74,6 @@ int main (int argc, char* argv[]) {
 			}
 
 			token_print(lex, &token);
-			goto start;
 		}
 
 		//Isso aki ve se o valor da letra lida é digito.
@@ -92,7 +94,7 @@ int main (int argc, char* argv[]) {
 				strcat(token.valor, pointer);
 				pascal = fgetc(codigo);
 				if (isdigit(pascal) == 0) {
-					printf ("%c NUMERO REAL INVALIDO! [%s] ESPERADO DIGITO!", pascal, token.valor);
+					printf ("%c NUMERO REAL INVALIDO! [%s] ESPERANDO DIGITO!", pascal, token.valor);
 					return 1;
 				}
 				do {
@@ -110,35 +112,31 @@ int main (int argc, char* argv[]) {
 				return 1;
 			}
 				token_print(lex, &token);
-				continue;
 		}
 
 		//Isso aki ve se o valor da letra lida é digito.
 		else if (ispunct(pascal)) {
-			char pointer[2] = {pascal, '\0'};
-			strcat(token.valor, pointer);
-			if (pascal == ':') {
+			do {
+				char pointer[2] = {pascal, '\0'};
+				strcat(token.valor, pointer);
 				pascal = fgetc(codigo);
-				if (pascal == '=') {
-					token.ID = OP_EQ;
-					token.TYPE = OPERADOR;
-					char pointer[2] = {pascal, '\0'};
-					strcat(token.valor, pointer);
-					token_print(lex, &token);
-					continue;
-				}
-				token.ID = token_comp(token.valor);
-				token.TYPE = token_type(token.ID);
-				goto start;
-			}
+			} while (ispunct(pascal));
+
 			token.ID = token_comp(token.valor);
 			token.TYPE = token_type(token.ID);
+
+			if (token.TYPE == IDENTIFICADOR) {
+				printf("OPERADOR OU SIMBOLO INVALIDO!\n CORRIJA [%s]!", token.valor);
+				return 1;
+			}
+
 			token_print(lex, &token);
 		};
 	};
 
 	printf("Tabela final de valores identificadores: ");
 	show_index(index);
+	fclose(codigo);
 
 	return 0;
 }

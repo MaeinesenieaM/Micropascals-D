@@ -1,16 +1,16 @@
 program Exemplo;
 
 var
-	x,y2:integer;
+	x,y:integer;
 	z : real;
 begin
 	x := 10;
-	y2 := 20;
-	z:=x+y2*2.57;
-	if x>y2 then
+	y := 20;
+	z:=x+y*2.57;
+	if x>y then
 		x:=x-1
 	else
-		y:=y2+1;
+		y:=y+1;
 	while z <= 100 do
 	begin
 		z := z * 5.0;

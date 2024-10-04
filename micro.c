@@ -4,6 +4,29 @@
 
 #include "micro.h"
 
+void print_error(int error, int coluna, int linha) {
+	printf("!UM ERRO OCORREU NA LINHA [%d] COLUNA [%d]!\n", linha, coluna);
+
+	switch (error) {
+		case ERROR_SEMARGUMENTO:
+			printf ("ARGUMENTOS INSUFICIENTE!\nTente executar o programa como:\n [./main.exe teste.pas] ou [./main.exe teste]");
+			exit(ERROR_SEMARGUMENTO);
+		case ERROR_LEX_NAOREAL:
+			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			exit(ERROR_LEX_NAOREAL);
+		case ERROR_LEX_PONTOS:
+			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			exit(ERROR_LEX_PONTOS);
+		case ERROR_LEX_LETRAEMNUMERO:
+			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			exit(ERROR_LEX_LETRAEMNUMERO);
+		case ERROR_LEX_SIMBOLOINV:
+			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			exit(ERROR_LEX_SIMBOLOINV);
+	}
+}
+
+//#####
 char *token_typeid_s(Token_ID ID) {
 	switch (ID) {
 		case OP_EQ:	  return "=";
@@ -113,7 +136,6 @@ int search_index(Index *list, const char *string) {
 	int count = 0;
 	while (list != NULL) {
 		count++;
-
 		if (strcmp(string, list->ident) == 0) return count - 1;
 		list = list->next;
 	}
@@ -162,3 +184,5 @@ void token_print(FILE *file, Token *token) {
 	fprintf(file, "<%d|%s|%s|%s>\n", token->ID, token_typeid_s(token->ID), token_type_s(token->TYPE), token->valor);
 	printf("<%d|%s|%s|%s>\n", token->ID, token_typeid_s(token->ID), token_type_s(token->TYPE), token->valor);
 }
+
+//#####

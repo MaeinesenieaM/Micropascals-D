@@ -94,5 +94,19 @@ Token_ID token_comp(const char *string); //Compara com o todos tipos de strings 
 void token_print(FILE *file, Token *token);
 
 int search_index(Index *list, const char *string);
+void change_index_t(Index *list, Index_TYPE type, int pos);
+void create_index(Index **list, const char *string, Index_TYPE type);
+void show_index(Index *list);
+
+//Responsavel por escrever em um arquivo e no console os tokens detectados.
+void token_print(FILE *file, Token *token);
+
+//Abaixo a uma lista de possíveis erros.
+#define ERROR_SEMARGUMENTO			100
+
+#define ERROR_LEX_NAOREAL			101
+#define ERROR_LEX_PONTOS			102
+#define ERROR_LEX_LETRAEMNUMERO		103
+#define ERROR_LEX_SIMBOLOINV		104
 
 #endif

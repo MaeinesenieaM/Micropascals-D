@@ -108,7 +108,7 @@ int main (int argc, char* argv[]) {
 				token_print(lex, &token);
 		}
 
-		//Isso aki ve se o valor da letra lida é digito.
+		//Isso aki ve se o valor da letra lida é um simbolo ou pontuação.
 		else if (ispunct(pascal)) {
 			do {
 				strcat_char(token.valor, pascal);

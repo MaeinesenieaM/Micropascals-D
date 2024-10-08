@@ -28,6 +28,7 @@ void print_error(int error, int linha, int coluna) {
 }
 
 //#####
+
 char *token_typeid_s(Token_ID ID) {
 	switch (ID) {
 		case OP_EQ:	  return "=";

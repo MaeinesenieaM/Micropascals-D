@@ -43,6 +43,7 @@ typedef enum {
 	IDENT,	 // identificador para valores ou funções.	30
 	LITER,   // literais para valores tipo string.		31
 	NIL,	 // significa praticamente nada.			32
+	ERR,	 // ERROR 33
 } Token_ID;
 
 typedef enum {
@@ -53,7 +54,8 @@ typedef enum {
 	CHAVE,
 	IDENTIFICADOR,
 	LITERAL,
-	DEFAULT
+	DEFAULT,
+	ERR_TYPE,
 } Token_TYPE;
 
 typedef struct {
@@ -72,6 +74,7 @@ typedef enum {
 typedef struct Index {
 	char ident[64];
 	Index_TYPE TYPE;
+	void *valor;
 	struct Index *next;
 } Index;
 
@@ -87,9 +90,10 @@ const char * const *toks[] = {keys, num, comp, simb, oper};
 char *token_typeid_s(Token_ID ID);	//Retorna uma string que representa o token. Ex: "=" ou "int".
 char *token_type_s(Token_TYPE type);
 Token_TYPE token_type(Token_ID ID);	//Retona o tipo do token.
-
 Token_ID token_get(int id); //Retorna o enum do ID. Se o ID estiver fora do alcance, retornara NIL.
 Token_ID token_comp(const char *string); //Compara com o todos tipos de strings e retorna o token correto. Caso contrario ira retornar IDENT.
+
+void token_update(Token_ID *token); //Atualiza o ID e o TIPO do token.
 
 void token_print(FILE *file, Token *token); //responsavel por dar print no console e salvar o token em .lex
 
@@ -110,5 +114,8 @@ void token_print(FILE *file, Token *token);
 #define ERROR_LEX_SIMBOLOINV		104
 
 void print_error(int error, int linha, int coluna);
+
+//A função pricipal para obter token atraves de um arquivo.
+Token token_analyzer(FILE *file, int *linha, int *coluna, Index **index);
 
 #endif

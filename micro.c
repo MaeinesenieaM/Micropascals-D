@@ -134,6 +134,13 @@ Token_ID token_comp(const char *string) {
 	return IDENT;
 }
 
+void token_update(Token_ID *token) {
+	token->ID = token_comp(token->valor);
+	token->TYPE = token_type(token->ID);
+};
+
+//#####
+
 int search_index(Index *list, const char *string) {
 	int count = 0;
 	while (list != NULL) {

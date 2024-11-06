@@ -13,7 +13,7 @@ begin
 		y:=y+1;
 	while z <= 100 do
 	begin
-		z := z * 5.0;
-		x := x + 2
+		z:=z*5.;
+		x:=x+2
 	end
 end.

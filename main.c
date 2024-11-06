@@ -19,6 +19,72 @@ void getchar_plus(FILE **file, char *letra, int *cont) {
 	*cont = *cont + 1;
 }
 
+void token_read(FILE *file, char *letra, int *cont, char string[]) {
+	getchar_plus(&file, letra, cont);
+	strcat_char(string, *letra);
+}
+
+Token token_analyzer(FILE *file, int *linha, int *coluna, Index *index) {
+	Token token = {
+		NIL,
+		DEFAULT,
+		""
+	};
+
+	char letra = '';
+	fpos_t pos;
+
+	token_read(file, &letra, coluna, token.valor);
+	if (isspace(letra)) return token;
+	strcat_char(token.valor, letra);
+
+	if (isalpha(letra)) {
+		do {
+			fgetpos(file, &pos); 
+			token_read(file, &letra, coluna, token.valor); 
+		} while (isalpha(pascal) || isdigit(pascal));
+		fsetpos(file &pos);
+		*coluna = *coluna - 1;
+		token_update(&token);
+
+		if (token.TYPE == IDENTIFICADOR) {
+			int index_pos = search_index(index, token.valor);
+			if (index_pos == -1) {
+				create_index(&index, token.valor, NONE);
+			}
+		}
+		return token;
+	}
+
+	else if (isdigit(pascal)) {
+
+		token.TYPE = NUMERO;
+
+		const char *pointer = &pascal;
+		do {
+			fgetpos(file, &pos); 
+			token_read(file, &letra, coluna, token.valor); 
+		} while (isdigit(pascal));
+
+		fsetpos(file &pos);
+		*coluna = *coluna - 1;
+
+		if (pascal == '.') {
+			token.ID = NUM_FLT;
+			strcat_char(token.valor, pascal);
+			getchar_plus(&codigo, &pascal, &coluna);
+			if (isdigit(pascal) == 0) print_error(ERROR_LEX_NAOREAL, linha, coluna);
+			do {
+				strcat_char(token.valor, pascal);
+				getchar_plus(&codigo, &pascal, &coluna);
+			} while (isdigit(pascal));
+			if (pascal == '.') print_error(ERROR_LEX_PONTOS, linha, coluna);
+		} else token.ID = NUM_INT;
+		if (isalpha(pascal)) print_error(ERROR_LEX_LETRAEMNUMERO, linha, coluna);
+		token_print(lex, &token);
+	}
+}
+
 int main (int argc, char* argv[]) {
 
 	int linha = 1, coluna = 1;

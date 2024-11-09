@@ -93,7 +93,7 @@ Token_TYPE token_type(Token_ID ID);	//Retona o tipo do token.
 Token_ID token_get(int id); //Retorna o enum do ID. Se o ID estiver fora do alcance, retornara NIL.
 Token_ID token_comp(const char *string); //Compara com o todos tipos de strings e retorna o token correto. Caso contrario ira retornar IDENT.
 
-void token_update(Token_ID *token); //Atualiza o ID e o TIPO do token.
+void token_update(Token *token); //Atualiza o ID e o TIPO do token.
 
 void token_print(FILE *file, Token *token); //responsavel por dar print no console e salvar o token em .lex
 
@@ -116,6 +116,6 @@ void token_print(FILE *file, Token *token);
 void print_error(int error, int linha, int coluna);
 
 //A função pricipal para obter token atraves de um arquivo.
-Token token_analyzer(FILE *file, int *linha, int *coluna, Index **index);
+Token token_analyzer(FILE *file, int *coluna, Index **index);
 
 #endif

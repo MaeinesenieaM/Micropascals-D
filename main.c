@@ -19,70 +19,97 @@ void getchar_plus(FILE **file, char *letra, int *cont) {
 	*cont = *cont + 1;
 }
 
-void token_read(FILE *file, char *letra, int *cont, char string[]) {
-	getchar_plus(&file, letra, cont);
+//Junta uma letra com uma string e substitui com a proxima letra do arquivo. Além de aumentar um contador.
+void switch_char(FILE *file, char *letra, int *cont, char string[]) {
 	strcat_char(string, *letra);
+	getchar_plus(&file, letra, cont);
 }
 
-Token token_analyzer(FILE *file, int *linha, int *coluna, Index *index) {
+//Retorna um token de erro.
+Token token_error(int codigo, char *string) {
+	Token token = {
+		ERR,
+		codigo,
+		""
+	};
+	strcpy(token.valor, string);
+	return token;
+}
+
+Token token_analyzer(FILE *file, int *coluna, Index **index) {
 	Token token = {
 		NIL,
 		DEFAULT,
 		""
 	};
 
-	char letra = '';
-	fpos_t pos;
+	char letra;
+	fpos_t pos; //Geralmente a posição da ultima letra lida.
 
-	token_read(file, &letra, coluna, token.valor);
-	if (isspace(letra)) return token;
-	strcat_char(token.valor, letra);
-
-	if (isalpha(letra)) {
-		do {
-			fgetpos(file, &pos); 
-			token_read(file, &letra, coluna, token.valor); 
-		} while (isalpha(pascal) || isdigit(pascal));
-		fsetpos(file &pos);
-		*coluna = *coluna - 1;
-		token_update(&token);
-
-		if (token.TYPE == IDENTIFICADOR) {
-			int index_pos = search_index(index, token.valor);
-			if (index_pos == -1) {
-				create_index(&index, token.valor, NONE);
-			}
-		}
+	getchar_plus(&file, &letra, coluna);
+	if (isspace(letra)) {
+		strcat_char(token.valor, letra);
 		return token;
 	}
+	if (letra == EOF) return token;
+	if (isalpha(letra)) {
+		do {
+			fgetpos(file, &pos);
+			switch_char(file, &letra, coluna, token.valor);
+		} while (isalpha(letra) || isdigit(letra));
+		token_update(&token);
+		if (token.TYPE == IDENTIFICADOR) {
+			int index_pos = search_index(*index, token.valor);
+			if (index_pos == -1) {
+				create_index(index, token.valor, NONE);
+			}
+		}
+	}
 
-	else if (isdigit(pascal)) {
-
+	else if (isdigit(letra)) {
 		token.TYPE = NUMERO;
-
-		const char *pointer = &pascal;
+		const char *pointer = &letra;
 		do {
 			fgetpos(file, &pos); 
-			token_read(file, &letra, coluna, token.valor); 
-		} while (isdigit(pascal));
+			switch_char(file, &letra, coluna, token.valor); 
+		} while (isdigit(letra));
 
-		fsetpos(file &pos);
-		*coluna = *coluna - 1;
-
-		if (pascal == '.') {
+		if (letra == '.') {
 			token.ID = NUM_FLT;
-			strcat_char(token.valor, pascal);
-			getchar_plus(&codigo, &pascal, &coluna);
-			if (isdigit(pascal) == 0) print_error(ERROR_LEX_NAOREAL, linha, coluna);
+			fgetpos(file, &pos); 
+			switch_char(file, &letra, coluna, token.valor);
+
+			if (isdigit(letra) == 0) {
+				token = token_error(ERROR_LEX_NAOREAL, token.valor);
+				goto end;
+			}
 			do {
-				strcat_char(token.valor, pascal);
-				getchar_plus(&codigo, &pascal, &coluna);
-			} while (isdigit(pascal));
-			if (pascal == '.') print_error(ERROR_LEX_PONTOS, linha, coluna);
+				fgetpos(file, &pos); 
+				switch_char(file, &letra, coluna, token.valor);
+			} while (isdigit(letra));
+			if (letra == '.') {
+				token = token_error(ERROR_LEX_PONTOS, token.valor);
+				goto end;
+			}
 		} else token.ID = NUM_INT;
-		if (isalpha(pascal)) print_error(ERROR_LEX_LETRAEMNUMERO, linha, coluna);
-		token_print(lex, &token);
+		if (isalpha(letra)) token = token_error(ERROR_LEX_LETRAEMNUMERO, token.valor);
 	}
+
+	else if (ispunct(letra)) {
+		do {
+			fgetpos(file, &pos); 
+			switch_char(file, &letra, coluna, token.valor); 
+		} while (ispunct(letra));
+		token_update(&token);
+		if (token.TYPE == IDENTIFICADOR) token = token_error(ERROR_LEX_SIMBOLOINV, token.valor);
+	};
+
+	end:
+	if (letra != EOF) {
+		fsetpos(file, &pos);
+		*coluna = *coluna - 1;
+	}
+	return token;
 }
 
 int main (int argc, char* argv[]) {
@@ -98,101 +125,23 @@ int main (int argc, char* argv[]) {
 	if (strstr(arquivo, ".pas") == NULL) strcat(arquivo, ".pas");
 
 	FILE *codigo = fopen(arquivo, "r");
+
 	if (codigo == NULL) {
 		printf("FALHA AO LER ARQUIVO!\n");
 		return 2;
 	}
 	FILE *lex = fopen("trim.lex", "w");
-
-	char pascal;
-
+	Index *index = NULL; //Index é a lista usada para guardar identificadores.
 	Token token;
-
-	//Index é a lista usada para guardar identificadores.
-	Index *index = NULL;
-
-	getchar_plus(&codigo, &pascal, &coluna);
-
-	while (pascal != EOF) {
-		token.ID = NIL;
-		token.TYPE = DEFAULT;
-		strcpy(token.valor, "\0");
-
-		if (isspace(pascal)) {
-			if (pascal == '\n') {
-				linha++;
-				coluna = 1;
-			}
-			getchar_plus(&codigo, &pascal, &coluna);
-		}
-
-		//Isso aki ve se o valor da letra lida é letra.
-		else if (isalpha(pascal)) {
-			do {
-				strcat_char(token.valor, pascal);
-				getchar_plus(&codigo, &pascal, &coluna);
-			} while (isalpha(pascal) || isdigit(pascal));
-
-			token.ID = token_comp(token.valor);
-			token.TYPE = token_type(token.ID);
-
-			if (token.TYPE == IDENTIFICADOR) {
-				int pos = search_index(index, token.valor);
-				if (pos == -1) {
-					create_index(&index, token.valor, NONE);
-					pos = search_index(index, token.valor);
-				}
-				strcpy(token.valor, "");
-				sprintf(token.valor, "t%d", pos); //Um print so que dentro de uma string.
-			}
-			token_print(lex, &token);
-		}
-
-		//Isso aki ve se o valor da letra lida é digito.
-		else if (isdigit(pascal)) {
-
-			token.TYPE = NUMERO;
-
-			const char *pointer = &pascal;
-			do {
-				strcat_char(token.valor, pascal);
-				getchar_plus(&codigo, &pascal, &coluna);
-			} while (isdigit(pascal));
-
-			if (pascal == '.') {
-				token.ID = NUM_FLT;
-				strcat_char(token.valor, pascal);
-				getchar_plus(&codigo, &pascal, &coluna);
-				if (isdigit(pascal) == 0) print_error(ERROR_LEX_NAOREAL, linha, coluna);
-				do {
-					strcat_char(token.valor, pascal);
-					getchar_plus(&codigo, &pascal, &coluna);
-				} while (isdigit(pascal));
-				if (pascal == '.') print_error(ERROR_LEX_PONTOS, linha, coluna);
-			} else token.ID = NUM_INT;
-			if (isalpha(pascal)) print_error(ERROR_LEX_LETRAEMNUMERO, linha, coluna);
-				token_print(lex, &token);
-		}
-
-		//Isso aki ve se o valor da letra lida é um simbolo ou pontuação.
-		else if (ispunct(pascal)) {
-			do {
-				strcat_char(token.valor, pascal);
-				getchar_plus(&codigo, &pascal, &coluna);
-			} while (ispunct(pascal));
-
-			token.ID = token_comp(token.valor);
-			token.TYPE = token_type(token.ID);
-
-			if (token.TYPE == IDENTIFICADOR) print_error(ERROR_LEX_SIMBOLOINV, linha, coluna);
-
-			token_print(lex, &token);
-		};
-	};
+	do {
+		token = token_analyzer(codigo, &coluna, &index);
+		if (token.ID != NIL) token_print(lex, &token);
+	} while (strcmp(token.valor, "") != 0);
 
 	printf("Tabela final de valores identificadores: ");
 	show_index(index);
 	fclose(codigo);
+	fclose(lex);
 
 	return 0;
 }

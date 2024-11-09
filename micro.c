@@ -24,6 +24,9 @@ void print_error(int error, int linha, int coluna) {
 		case ERROR_LEX_SIMBOLOINV:
 			printf ("OPERADOR OU SIMBOLO INVALIDO!");
 			exit(ERROR_LEX_SIMBOLOINV);
+		default:
+			printf ("ERRO DESCONHECIDO!");
+			exit(1);
 	}
 }
 
@@ -134,10 +137,10 @@ Token_ID token_comp(const char *string) {
 	return IDENT;
 }
 
-void token_update(Token_ID *token) {
+void token_update(Token *token) {
 	token->ID = token_comp(token->valor);
 	token->TYPE = token_type(token->ID);
-};
+}
 
 //#####
 

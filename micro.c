@@ -5,21 +5,23 @@
 #include "micro.h"
 
 //Gerenciador de erros.
-void print_error(int error, int linha, int coluna) {
+void print_error(int error, int linha, int coluna, const char *string) {
 	printf("!UM ERRO OCORREU NA LINHA [%d] COLUNA [%d]!\n", linha, coluna);
+
+	if (string != NULL) printf("[%s] ", string);
 
 	switch (error) {
 		case ERROR_SEMARGUMENTO:
 			printf ("ARGUMENTOS INSUFICIENTE!\nTente executar o programa como:\n [./main.exe teste.pas] ou [./main.exe teste]");
 			exit(ERROR_SEMARGUMENTO);
 		case ERROR_LEX_NAOREAL:
-			printf ("NUMERO REAL INVALIDO! ESPERADO DIGITO!");
+			printf ("NUMERO REAL INVALIDO! ESPERADO NUMERO!");
 			exit(ERROR_LEX_NAOREAL);
 		case ERROR_LEX_PONTOS:
-			printf ("NUMEROS NAO PODEM TER MAIS DE UM PONTO!");
+			printf ("NUMEROS REAIS NAO PODEM TER MAIS DE UM PONTO!");
 			exit(ERROR_LEX_PONTOS);
 		case ERROR_LEX_LETRAEMNUMERO:
-			printf ("OCORREU UM ERRO AO IDENTIFICAR O NUMERO!\nENCONTRADO LETRA AO EM VEZ DE DIGITO!");
+			printf ("ENCONTRADO LETRA AO EM VEZ DE NUMERO!");
 			exit(ERROR_LEX_LETRAEMNUMERO);
 		case ERROR_LEX_SIMBOLOINV:
 			printf ("OPERADOR OU SIMBOLO INVALIDO!");

@@ -113,7 +113,7 @@ void token_print(FILE *file, Token *token);
 #define ERROR_LEX_LETRAEMNUMERO		103
 #define ERROR_LEX_SIMBOLOINV		104
 
-void print_error(int error, int linha, int coluna);
+void print_error(int error, int linha, int coluna, const char *string);
 
 //A função pricipal para obter token atraves de um arquivo.
 Token token_analyzer(FILE *file, int *coluna, Index **index);

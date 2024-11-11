@@ -35,7 +35,7 @@ Token token_error(int codigo, char *string) {
 	strcpy(token.valor, string);
 	return token;
 }
-
+//Ler um arquivo e retorna um token identificado, junto com aumento do valor COLUNA a cada CHAR lido do arquivo.
 Token token_analyzer(FILE *file, int *coluna, Index **index) {
 	Token token = {
 		NIL,
@@ -52,7 +52,7 @@ Token token_analyzer(FILE *file, int *coluna, Index **index) {
 		return token;
 	}
 	if (letra == EOF) return token;
-	if (isalpha(letra)) {
+	if (isalpha(letra)) {	//Detecta identificadores e constantes
 		do {
 			fgetpos(file, &pos);
 			switch_char(file, &letra, coluna, token.valor);
@@ -66,7 +66,7 @@ Token token_analyzer(FILE *file, int *coluna, Index **index) {
 		}
 	}
 
-	else if (isdigit(letra)) {
+	else if (isdigit(letra)) {	//Detecta números
 		token.TYPE = NUMERO;
 		const char *pointer = &letra;
 		do {
@@ -95,7 +95,7 @@ Token token_analyzer(FILE *file, int *coluna, Index **index) {
 		if (isalpha(letra)) token = token_error(ERROR_LEX_LETRAEMNUMERO, token.valor);
 	}
 
-	else if (ispunct(letra)) {
+	else if (ispunct(letra)) {	//Detecta simbolos.
 		do {
 			fgetpos(file, &pos); 
 			switch_char(file, &letra, coluna, token.valor); 
@@ -133,9 +133,25 @@ int main (int argc, char* argv[]) {
 	FILE *lex = fopen("trim.lex", "w");
 	Index *index = NULL; //Index é a lista usada para guardar identificadores.
 	Token token;
+
+	//#### Loop Principal!
+	//Se for editar o codigo por favor crie uma branch com o GIT e faça suas mudanças la, depois peça que ela seja aprovada
+	//pelo github!
 	do {
 		token = token_analyzer(codigo, &coluna, &index);
-		if (token.ID != NIL) token_print(lex, &token);
+		switch (token.ID) {
+			case NIL:
+				if (strcmp(token.valor, "\n") == 0) {
+					linha++;
+					coluna = 1;
+				}
+				break;
+			case ERR:
+				print_error(token.TYPE, linha, coluna, token.valor);
+				break;
+			default:
+				token_print(lex, &token);
+		}
 	} while (strcmp(token.valor, "") != 0);
 
 	printf("Tabela final de valores identificadores: ");

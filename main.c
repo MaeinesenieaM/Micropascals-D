@@ -138,6 +138,8 @@ int main (int argc, char* argv[]) {
 	//Se for editar o codigo por favor crie uma branch com o GIT e faça suas mudanças la, depois peça que ela seja aprovada
 	//pelo github!
 	do {
+		//Pra fazer! Infelizmente o switch abaixo tem que tornar em uma função para poder fazer o
+		//Analaisador Sintatico de uma forma mais comfortavel.
 		token = token_analyzer(codigo, &coluna, &index);
 		switch (token.ID) {
 			case NIL:
@@ -145,12 +147,19 @@ int main (int argc, char* argv[]) {
 					linha++;
 					coluna = 1;
 				}
-				break;
+				continue;
 			case ERR:
 				print_error(token.TYPE, linha, coluna, token.valor);
-				break;
+				continue;
 			default:
 				token_print(lex, &token);
+		}
+		//switch temporario enquanto eu penso em uma forma melhor de programa isto.
+		switch (token.ID) {
+			case PROGRAM:
+				do { token = token_analyzer(codigo, &coluna, &index); } while (token.ID == NIL);
+				if (token.ID != IDENT) print_error(ERROR_PARSER_SYN_PROGRAM, linha, coluna, token.valor);
+				break;
 		}
 	} while (strcmp(token.valor, "") != 0);
 

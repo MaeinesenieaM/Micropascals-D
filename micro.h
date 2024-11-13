@@ -106,12 +106,14 @@ void show_index(Index *list);
 void token_print(FILE *file, Token *token);
 
 //Abaixo a uma lista de possíveis erros.
-#define ERROR_SEMARGUMENTO			100
+#define ERROR_SEMARGUMENTO			001
 
 #define ERROR_LEX_NAOREAL			101
 #define ERROR_LEX_PONTOS			102
 #define ERROR_LEX_LETRAEMNUMERO		103
 #define ERROR_LEX_SIMBOLOINV		104
+
+#define ERROR_PARSER_SYN_PROGRAM	201
 
 void print_error(int error, int linha, int coluna, const char *string);
 

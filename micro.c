@@ -26,6 +26,9 @@ void print_error(int error, int linha, int coluna, const char *string) {
 		case ERROR_LEX_SIMBOLOINV:
 			printf ("OPERADOR OU SIMBOLO INVALIDO!");
 			exit(ERROR_LEX_SIMBOLOINV);
+		case ERROR_PARSER_SYN_PROGRAM:
+			printf ("ESPERADO INDENTIFICADOR!");
+			exit(ERROR_PARSER_SYN_PROGRAM);
 		default:
 			printf ("ERRO DESCONHECIDO!");
 			exit(1);

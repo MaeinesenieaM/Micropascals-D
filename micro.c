@@ -12,7 +12,7 @@ void print_error(int error, int linha, int coluna, const char *string) {
 
 	switch (error) {
 		case ERROR_SEMARGUMENTO:
-			printf("ARGUMENTOS INSUFICIENTE!\nTente executar o programa como:\n [./main.exe teste.pas] ou [./main.exe teste]");
+			printf("ARGUMENTOS INSUFICIENTES!\nTente executar o programa como:\n {./main.exe teste.pas} ou {./main.exe teste}");
 			exit(ERROR_SEMARGUMENTO);
 		case ERROR_LEX_NAOREAL:
 			printf("NUMERO REAL INVALIDO! ESPERADO NUMERO!");
@@ -33,6 +33,24 @@ void print_error(int error, int linha, int coluna, const char *string) {
 		case ERROR_PARSER_SYN_NOIDENT:
 			printf("ESPERADO IDENTIFICADOR!");
 			exit(ERROR_PARSER_SYN_NOIDENT);
+		case ERROR_PARSER_SYN_NUMTYPE:
+			printf("ESPERADO TIPO NUMERO!");
+			exit(ERROR_PARSER_SYN_NUMTYPE);
+		case ERROR_PARSER_SYN_UNSYMBOL:
+			printf("SIMBOLO EM LUGAR ILEGAL!");
+			exit(ERROR_PARSER_SYN_UNSYMBOL);
+		case ERROR_PARSER_SYN_NOOPMAT:
+			printf("ESPERADO OPERADOR MATEMATICO!");
+			exit(ERROR_PARSER_SYN_NOOPMAT);
+		case ERROR_PARSER_SYN_IDENMAT:
+			printf("ESPERADO OPERADOR MATEMATICO OU IDENTIFICADOR!");
+			exit(ERROR_PARSER_SYN_IDENMAT);
+		case ERROR_PARSER_SYN_ODDBRACK:
+			printf("QUANTIDADE DE ENCAPSULAMENTO ILEGAL!");
+			exit(ERROR_PARSER_SYN_ODDBRACK);
+		case ERROR_PARSER_SYN_NOTEXPR:
+			printf("EXPRESSAO COM PALAVRA INVALIDA!");
+			exit(ERROR_PARSER_SYN_NOTEXPR);
 
 		default:
 			printf ("ERRO DESCONHECIDO!");

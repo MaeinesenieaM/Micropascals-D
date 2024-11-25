@@ -12,23 +12,28 @@ void print_error(int error, int linha, int coluna, const char *string) {
 
 	switch (error) {
 		case ERROR_SEMARGUMENTO:
-			printf ("ARGUMENTOS INSUFICIENTE!\nTente executar o programa como:\n [./main.exe teste.pas] ou [./main.exe teste]");
+			printf("ARGUMENTOS INSUFICIENTE!\nTente executar o programa como:\n [./main.exe teste.pas] ou [./main.exe teste]");
 			exit(ERROR_SEMARGUMENTO);
 		case ERROR_LEX_NAOREAL:
-			printf ("NUMERO REAL INVALIDO! ESPERADO NUMERO!");
+			printf("NUMERO REAL INVALIDO! ESPERADO NUMERO!");
 			exit(ERROR_LEX_NAOREAL);
 		case ERROR_LEX_PONTOS:
-			printf ("NUMEROS REAIS NAO PODEM TER MAIS DE UM PONTO!");
+			printf("NUMEROS REAIS NAO PODEM TER MAIS DE UM PONTO!");
 			exit(ERROR_LEX_PONTOS);
 		case ERROR_LEX_LETRAEMNUMERO:
-			printf ("ENCONTRADO LETRA AO EM VEZ DE NUMERO!");
+			printf("ENCONTRADO LETRA AO EM VEZ DE NUMERO!");
 			exit(ERROR_LEX_LETRAEMNUMERO);
 		case ERROR_LEX_SIMBOLOINV:
-			printf ("OPERADOR OU SIMBOLO INVALIDO!");
+			printf("OPERADOR OU SIMBOLO INVALIDO!");
 			exit(ERROR_LEX_SIMBOLOINV);
+
 		case ERROR_PARSER_SYN_PROGRAM:
-			printf ("ESPERADO INDENTIFICADOR!");
+			printf("ESPERADO IDENTIFICADOR!");
 			exit(ERROR_PARSER_SYN_PROGRAM);
+		case ERROR_PARSER_SYN_NOIDENT:
+			printf("ESPERADO IDENTIFICADOR!");
+			exit(ERROR_PARSER_SYN_NOIDENT);
+
 		default:
 			printf ("ERRO DESCONHECIDO!");
 			exit(1);

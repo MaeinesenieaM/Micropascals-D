@@ -1,4 +1,4 @@
-program Teste2
+program var
 var
     x , y : real;
 begin

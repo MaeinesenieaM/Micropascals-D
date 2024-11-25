@@ -112,6 +112,10 @@ Token token_analyzer(FILE *file, int *coluna, Index **index) {
 	return token;
 }
 
+void read_token(FILE *codigo, int *coluna, Index *index, Token *token) {
+	do { token = token_analyzer(codigo, coluna, &index); } while (token.ID == NIL);
+}
+
 int main (int argc, char* argv[]) {
 
 	int linha = 1, coluna = 1;
@@ -160,6 +164,18 @@ int main (int argc, char* argv[]) {
 				do { token = token_analyzer(codigo, &coluna, &index); } while (token.ID == NIL);
 				if (token.ID != IDENT) print_error(ERROR_PARSER_SYN_PROGRAM, linha, coluna, token.valor);
 				break;
+			case IDENTIFICADOR:
+				read_token(FILE codigo, &coluna, index, &token);
+				if (token.ID == SMB_COM) {
+					read_token(FILE codigo, &coluna, index, &token);
+					if (token.ID != IDENTIFICADOR) print_error(ERROR_PARSER_SYN_NOIDENT, linha, coluna, token.valor);
+					goto IDENTIFICADOR;
+				}
+				else if (token.ID == SMB_DPT) {
+					read_token(FILE codigo, &coluna, index, &token);
+				}
+				break;
+
 		}
 	} while (strcmp(token.valor, "") != 0);
 

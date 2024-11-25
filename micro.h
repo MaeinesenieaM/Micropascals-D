@@ -114,6 +114,7 @@ void token_print(FILE *file, Token *token);
 #define ERROR_LEX_SIMBOLOINV		104
 
 #define ERROR_PARSER_SYN_PROGRAM	201
+#define ERROR_PARSER_SYN_NOIDENT	202
 
 void print_error(int error, int linha, int coluna, const char *string);
 

@@ -43,7 +43,7 @@ void print_error(int error, int linha, int coluna, const char *string) {
 			printf("ESPERADO OPERADOR MATEMATICO!");
 			exit(ERROR_PARSER_SYN_NOOPMAT);
 		case ERROR_PARSER_SYN_IDENMAT:
-			printf("ESPERADO OPERADOR MATEMATICO OU IDENTIFICADOR!");
+			printf("ESPERADO NUMERO OU IDENTIFICADOR!");
 			exit(ERROR_PARSER_SYN_IDENMAT);
 		case ERROR_PARSER_SYN_ODDBRACK:
 			printf("QUANTIDADE DE ENCAPSULAMENTO ILEGAL!");
@@ -51,6 +51,15 @@ void print_error(int error, int linha, int coluna, const char *string) {
 		case ERROR_PARSER_SYN_NOTEXPR:
 			printf("EXPRESSAO COM PALAVRA INVALIDA!");
 			exit(ERROR_PARSER_SYN_NOTEXPR);
+		case ERROR_PARSER_SYN_NOTCOMP:
+			printf("ESPERADO COMPARADOR LOGICO!");
+			exit(ERROR_PARSER_SYN_NOTCOMP);
+		case ERROR_PARSER_SYN_NOSEMICO:
+			printf("ESPERADO FIM DA EXPRESSAO COM THEN OU DO, NAO {;}!");
+			exit(ERROR_PARSER_SYN_NOSEMICO);
+		case ERROR_PARSER_SYN_OPSTART:
+			printf("OPERADOR ILEGAL NO COMECO DE ESPRESSAO!");
+			exit(ERROR_PARSER_SYN_OPSTART);
 
 		default:
 			printf ("ERRO DESCONHECIDO!");

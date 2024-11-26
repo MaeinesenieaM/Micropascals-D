@@ -112,45 +112,104 @@ Token token_analyzer(FILE *file, int *coluna, Index **index) {
 	return token;
 }
 
-void read_token(FILE *codigo, int *coluna, Index *index, Token *token) {
-	do { *token = token_analyzer(codigo, coluna, &index); } while (token->ID == NIL);
+//AVISO! USE SOMENTE read_token PARA ANALISE DE UMA LINHA SÓ!
+void read_token(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
+	do { 
+		*token = token_analyzer(codigo, coluna, &index);
+		if (strcmp(token->valor, "\n") == 0) {
+					*linha++;
+					coluna = 1;
+		}
+	} while (token->ID == NIL);
 }
 
-void analisador_expressao(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
+void analisador_expressao_matematica(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
 	int parenteses = 0; //Esse valor diz quantos parenteses faltam para fechar a expressão.
 
-	do {
-		read_token(codigo, coluna, index, token);
 
-		switch(token->TYPE) {
-			case SIMBOLO:
-				//SMB_OPA = ( SMB_CPA = ) SMB_SEM = ;
-				if (token->ID == SMB_OPA) {
-					parenteses++;
-					continue;
-				}
-				else if (token->ID == SMB_CPA) {
-					parenteses--;
-					continue;
-				}
-				else if (token->ID == SMB_SEM) break;
-				else print_error(ERROR_PARSER_SYN_NUMTYPE, *linha, *coluna, token->valor);
-			case IDENTIFICADOR: case NUMERO:
-				read_token(codigo, coluna, index, token);
+	//Esse codigo talvez seja complicado demais para entender, cuidado ao oq ta embaixo.
+repeat:
+	read_token(codigo, linha, coluna, index, token);
 
-				if (token->TYPE == OPERADOR && token->ID != OP_EQ) continue;
-				else if (token->ID == SMB_SEM) break;
-				else print_error(ERROR_PARSER_SYN_NOOPMAT, *linha, *coluna, token->valor);
-			case OPERADOR:
-				read_token(codigo, coluna, index, token);
+	switch(token->TYPE) {
+		case SIMBOLO:
+			//SMB_OPA = ( SMB_CPA = ) SMB_SEM = ;
+			if (token->ID == SMB_OPA) {
+				parenteses++;
+				goto repeat;
+			}
+			else if (token->ID == SMB_CPA) {
+				parenteses--;
+				goto repeat;
+			}
+			else if (token->ID == SMB_SEM) break; //Garante que o analisador termine com {;}
+			else print_error(ERROR_PARSER_SYN_NUMTYPE, *linha, *coluna, token->valor);
+		case IDENTIFICADOR: case NUMERO:
+			read_token(codigo, linha, coluna, index, token);
 
-				if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) continue;
-				print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
-			default:
-				print_error(ERROR_PARSER_SYN_NOTEXPR, *linha, *coluna, token->valor);			
-		}
+			//Quando detecta um identificador e espera OPERADORES validos.
+			if (token->TYPE == OPERADOR && token->ID != OP_EQ) {
+				read_token(codigo, linha, coluna, index, token);
+				if (token->TYPE == IDENTIFICADOR || token->TYPE == NUMERO || token->ID == SMB_OPA) goto repeat;
+			} else if (token->ID == SMB_SEM || token->ID == THEN || token->ID == DO) break;
+			else print_error(ERROR_PARSER_SYN_NOOPMAT, *linha, *coluna, token->valor);
+		case OPERADOR:
+			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor)
+			read_token(codigo, linha, coluna, index, token);
+
+			if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) goto repeat;
+			else print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
+		case CHAVE:
+			if (token->ID == THEN || token->ID == DO) break; //Garante que o analisador termine com THEN e DO.
+		default:
+			print_error(ERROR_PARSER_SYN_NOTEXPR, *linha, *coluna, token->valor);
 	}
-	while (token->ID != SMB_SEM);
+
+	if (parenteses != 0) print_error(ERROR_PARSER_SYN_ODDBRACK, *linha, *coluna, token->valor);
+}
+
+//expressões logicas não podem ser usadas além de codições.
+void analisador_expressao_logico(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
+	int parenteses = 0; //Esse valor diz quantos parenteses faltam para fechar a expressão.
+
+repeat:	
+	read_token(codigo, linha, coluna, index, token);
+
+	switch(token->TYPE) {
+		case SIMBOLO:
+			//SMB_OPA = ( SMB_CPA = ) SMB_SEM = ;
+			if (token->ID == SMB_OPA) {
+				parenteses++;
+				goto repeat;
+			}
+			else if (token->ID == SMB_CPA) {
+				parenteses--;
+				goto repeat;
+			}
+			//Esta parte esta comentada já que expressoes logicas não usam {;} para terminar
+			//a analise, mas caso qualquer coisa descomenta o codigo se for preciso.
+		//	else if (token->ID == SMB_SEM) break;
+			else print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
+		case IDENTIFICADOR: case NUMERO:
+			read_token(codigo, linha, coluna, index, token);
+
+			if (token->TYPE != COMPARADOR) print_error(ERROR_PARSER_SYN_NOTCOMP, *linha, *coluna, token->valor);
+
+			analisador_expressao_matematica(codigo, linha, coluna, index, token);
+			if (token->ID == SMB_SEM) print_error(ERROR_PARSER_SYN_NOSEMICO, *linha, *coluna, token->valor);
+			break;
+		case OPERADOR:
+			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor)
+			read_token(codigo, linha, coluna, index, token);
+
+			if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) goto repeat;
+			else print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
+		case CHAVE:
+			if (token->ID == THEN || token->ID == DO) break;
+		default:
+			print_error(ERROR_PARSER_SYN_NOTEXPR, *linha, *coluna, token->valor);			
+	}
+
 
 	if (parenteses != 0) print_error(ERROR_PARSER_SYN_ODDBRACK, *linha, *coluna, token->valor);
 }
@@ -184,6 +243,7 @@ int main (int argc, char* argv[]) {
 		//Pra fazer! Infelizmente o switch abaixo tem que tornar em uma função para poder fazer o
 		//Analaisador Sintatico de uma forma mais comfortavel.
 		token = token_analyzer(codigo, &coluna, &index);
+		read_token(codigo, linha, &coluna, index, &token);
 		switch (token.ID) {
 			case NIL:
 				if (strcmp(token.valor, "\n") == 0) {
@@ -204,16 +264,16 @@ int main (int argc, char* argv[]) {
 				if (token.ID != IDENT) print_error(ERROR_PARSER_SYN_PROGRAM, linha, coluna, token.valor);
 				break;
 			case IDENTIFICADOR: IDENT:
-				read_token(codigo, &coluna, index, &token);
+				read_token(codigo, linha, &coluna, index, &token);
 				//SMB_COM = ,
 				if (token.ID == SMB_COM) {
-					read_token(codigo, &coluna, index, &token);
+					read_token(codigo, linha, &coluna, index, &token);
 					if (token.ID != IDENTIFICADOR) print_error(ERROR_PARSER_SYN_NOIDENT, linha, coluna, token.valor);
 					goto IDENT;
 				}
 				//SMB_DPT = :
 				else if (token.ID == SMB_DPT) {
-					read_token(codigo, &coluna, index, &token);
+					read_token(codigo, linha, &coluna, index, &token);
 					if (token.TYPE != NUMERO) print_error(ERROR_PARSER_SYN_NUMTYPE, linha, coluna, token.valor);
 				}
 				else if (token.ID == OP_EQ)

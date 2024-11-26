@@ -117,7 +117,7 @@ void read_token(FILE *codigo, int *linha, int *coluna, Index *index, Token *toke
 	do { 
 		*token = token_analyzer(codigo, coluna, &index);
 		if (strcmp(token->valor, "\n") == 0) {
-					*linha++;
+					*linha = *linha + 1;
 					*coluna = 1;
 		}
 	} while (token->ID == NIL && strcmp(token->valor, "") != 0);
@@ -133,14 +133,15 @@ repeat:
 	read_token(codigo, linha, coluna, index, token);
 
 	switch(token->TYPE) {
-		case SIMBOLO:
+		case SIMBOLO: SIMB:
 			//SMB_OPA = ( SMB_CPA = ) SMB_SEM = ;
 			if (token->ID == SMB_OPA) {
+				//printf("ERAPARA EU SABER QUE E (");
 				parenteses++;
 				goto repeat;
 			}
 			else if (token->ID == SMB_CPA) {
-				parenteses--;
+				parenteses = parenteses - 1;
 				goto repeat;
 			}
 			else if (token->ID == SMB_SEM) break; //Garante que o analisador termine com {;}
@@ -149,13 +150,12 @@ repeat:
 			read_token(codigo, linha, coluna, index, token);
 
 			//Quando detecta um identificador e espera OPERADORES validos.
-			if (token->TYPE == OPERADOR && token->ID != OP_EQ) {
-				read_token(codigo, linha, coluna, index, token);
-				if (token->TYPE == IDENTIFICADOR || token->TYPE == NUMERO || token->ID == SMB_OPA) goto repeat;
-			} else if (token->ID == SMB_SEM || token->ID == THEN || token->ID == DO) break;
-			else print_error(ERROR_PARSER_SYN_NOOPMAT, *linha, *coluna, token->valor);
+			if (token->TYPE == OPERADOR && token->ID != OP_EQ) goto repeat;
+			else if (token->TYPE == SIMBOLO) goto SIMB;
+			else if (token->ID == SMB_SEM || token->ID == THEN || token->ID == DO) break;
+			else print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
 		case OPERADOR:
-			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor);
+//			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor);
 			read_token(codigo, linha, coluna, index, token);
 
 			if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) goto repeat;
@@ -279,7 +279,7 @@ int main (int argc, char* argv[]) {
 				}
 				else if (token.ID == OP_EQ)
 				break;
-			case OP_EQ: COMP_EQ:
+			case OP_EQ:
 				analisador_expressao_matematica(codigo, &linha, &coluna, index, &token);
 				break;
 		}

@@ -118,9 +118,9 @@ void read_token(FILE *codigo, int *linha, int *coluna, Index *index, Token *toke
 		*token = token_analyzer(codigo, coluna, &index);
 		if (strcmp(token->valor, "\n") == 0) {
 					*linha++;
-					coluna = 1;
+					*coluna = 1;
 		}
-	} while (token->ID == NIL);
+	} while (token->ID == NIL && strcmp(token->valor, "") != 0);
 }
 
 void analisador_expressao_matematica(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
@@ -129,6 +129,7 @@ void analisador_expressao_matematica(FILE *codigo, int *linha, int *coluna, Inde
 
 	//Esse codigo talvez seja complicado demais para entender, cuidado ao oq ta embaixo.
 repeat:
+
 	read_token(codigo, linha, coluna, index, token);
 
 	switch(token->TYPE) {
@@ -154,7 +155,7 @@ repeat:
 			} else if (token->ID == SMB_SEM || token->ID == THEN || token->ID == DO) break;
 			else print_error(ERROR_PARSER_SYN_NOOPMAT, *linha, *coluna, token->valor);
 		case OPERADOR:
-			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor)
+			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor);
 			read_token(codigo, linha, coluna, index, token);
 
 			if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) goto repeat;
@@ -199,7 +200,7 @@ repeat:
 			if (token->ID == SMB_SEM) print_error(ERROR_PARSER_SYN_NOSEMICO, *linha, *coluna, token->valor);
 			break;
 		case OPERADOR:
-			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor)
+			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor);
 			read_token(codigo, linha, coluna, index, token);
 
 			if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) goto repeat;
@@ -242,8 +243,8 @@ int main (int argc, char* argv[]) {
 	do {
 		//Pra fazer! Infelizmente o switch abaixo tem que tornar em uma função para poder fazer o
 		//Analaisador Sintatico de uma forma mais comfortavel.
-		token = token_analyzer(codigo, &coluna, &index);
-		read_token(codigo, linha, &coluna, index, &token);
+//		token = token_analyzer(codigo, &coluna, &index);
+		read_token(codigo, &linha, &coluna, index, &token);
 		switch (token.ID) {
 			case NIL:
 				if (strcmp(token.valor, "\n") == 0) {
@@ -264,22 +265,22 @@ int main (int argc, char* argv[]) {
 				if (token.ID != IDENT) print_error(ERROR_PARSER_SYN_PROGRAM, linha, coluna, token.valor);
 				break;
 			case IDENTIFICADOR: IDENT:
-				read_token(codigo, linha, &coluna, index, &token);
+				read_token(codigo, &linha, &coluna, index, &token);
 				//SMB_COM = ,
 				if (token.ID == SMB_COM) {
-					read_token(codigo, linha, &coluna, index, &token);
+					read_token(codigo, &linha, &coluna, index, &token);
 					if (token.ID != IDENTIFICADOR) print_error(ERROR_PARSER_SYN_NOIDENT, linha, coluna, token.valor);
 					goto IDENT;
 				}
 				//SMB_DPT = :
 				else if (token.ID == SMB_DPT) {
-					read_token(codigo, linha, &coluna, index, &token);
+					read_token(codigo, &linha, &coluna, index, &token);
 					if (token.TYPE != NUMERO) print_error(ERROR_PARSER_SYN_NUMTYPE, linha, coluna, token.valor);
 				}
 				else if (token.ID == OP_EQ)
 				break;
 			case OP_EQ: COMP_EQ:
-				analisador_expressao(codigo, &linha, &coluna, index, &token);
+				analisador_expressao_matematica(codigo, &linha, &coluna, index, &token);
 				break;
 		}
 	} while (strcmp(token.valor, "") != 0);

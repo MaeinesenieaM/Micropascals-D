@@ -61,6 +61,20 @@ void print_error(int error, int linha, int coluna, const char *string) {
 			printf("OPERADOR ILEGAL NO COMECO DE ESPRESSAO!");
 			exit(ERROR_PARSER_SYN_OPSTART);
 
+		case ERROR_PARSER_SYN_NOTDO:
+			printf("ESPERADO CHAVE {DO}!");
+			exit(ERROR_PARSER_SYN_NOTDO);
+		case ERROR_PARSER_SYN_NOTTHEN:
+			printf("ESPERADO CHAVE {THEN}!");
+			exit(ERROR_PARSER_SYN_NOTTHEN);
+		case ERROR_PARSER_SYN_ODDEND:
+			printf("QUANTIDADE DE {BEGIN} E {END} ILEGAL!");
+			exit(ERROR_PARSER_SYN_ODDEND);
+
+		case ERROR_PARSER_SYN_NOTMATH:
+			printf("ESPERADO ESPRESSAO MATEMATICA!");
+			exit(ERROR_PARSER_SYN_NOTMATH);
+
 		default:
 			printf ("ERRO DESCONHECIDO!");
 			exit(1);

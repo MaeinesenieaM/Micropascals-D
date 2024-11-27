@@ -123,20 +123,20 @@ void read_token(FILE *codigo, int *linha, int *coluna, Index *index, Token *toke
 	} while (token->ID == NIL && strcmp(token->valor, "") != 0);
 }
 
-void analisador_expressao_matematica(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
+
+int analisador_expressao_matematica(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
 	int parenteses = 0; //Esse valor diz quantos parenteses faltam para fechar a expressão.
 
-
+	int ident = 0;
 	//Esse codigo talvez seja complicado demais para entender, cuidado ao oq ta embaixo.
 repeat:
-
 	read_token(codigo, linha, coluna, index, token);
 
 	switch(token->TYPE) {
 		case SIMBOLO: SIMB:
+			ident++;
 			//SMB_OPA = ( SMB_CPA = ) SMB_SEM = ;
 			if (token->ID == SMB_OPA) {
-				//printf("ERAPARA EU SABER QUE E (");
 				parenteses++;
 				goto repeat;
 			}
@@ -147,15 +147,16 @@ repeat:
 			else if (token->ID == SMB_SEM) break; //Garante que o analisador termine com {;}
 			else print_error(ERROR_PARSER_SYN_NUMTYPE, *linha, *coluna, token->valor);
 		case IDENTIFICADOR: case NUMERO:
+			ident++;
 			read_token(codigo, linha, coluna, index, token);
 
 			//Quando detecta um identificador e espera OPERADORES validos.
 			if (token->TYPE == OPERADOR && token->ID != OP_EQ) goto repeat;
 			else if (token->TYPE == SIMBOLO) goto SIMB;
-			else if (token->ID == SMB_SEM || token->ID == THEN || token->ID == DO) break;
-			else print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
+			else if (token->ID == SMB_SEM || token->ID == THEN || token->ID == DO || token->TYPE == COMPARADOR) break;
+			else print_error(ERROR_PARSER_SYN_NOOPMAT, *linha, *coluna, token->valor);
 		case OPERADOR:
-//			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor);
+			ident++;
 			read_token(codigo, linha, coluna, index, token);
 
 			if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) goto repeat;
@@ -167,52 +168,20 @@ repeat:
 	}
 
 	if (parenteses != 0) print_error(ERROR_PARSER_SYN_ODDBRACK, *linha, *coluna, token->valor);
+	return ident;
 }
 
 //expressões logicas não podem ser usadas além de codições.
 void analisador_expressao_logico(FILE *codigo, int *linha, int *coluna, Index *index, Token *token) {
-	int parenteses = 0; //Esse valor diz quantos parenteses faltam para fechar a expressão.
-
-repeat:	
-	read_token(codigo, linha, coluna, index, token);
+	if(analisador_expressao_matematica(codigo, linha, coluna, index, token) == 0) print_error(ERROR_PARSER_SYN_NOTMATH, *linha, *coluna, token->valor);
 
 	switch(token->TYPE) {
-		case SIMBOLO:
-			//SMB_OPA = ( SMB_CPA = ) SMB_SEM = ;
-			if (token->ID == SMB_OPA) {
-				parenteses++;
-				goto repeat;
-			}
-			else if (token->ID == SMB_CPA) {
-				parenteses--;
-				goto repeat;
-			}
-			//Esta parte esta comentada já que expressoes logicas não usam {;} para terminar
-			//a analise, mas caso qualquer coisa descomenta o codigo se for preciso.
-		//	else if (token->ID == SMB_SEM) break;
-			else print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
-		case IDENTIFICADOR: case NUMERO:
-			read_token(codigo, linha, coluna, index, token);
-
-			if (token->TYPE != COMPARADOR) print_error(ERROR_PARSER_SYN_NOTCOMP, *linha, *coluna, token->valor);
-
-			analisador_expressao_matematica(codigo, linha, coluna, index, token);
-			if (token->ID == SMB_SEM) print_error(ERROR_PARSER_SYN_NOSEMICO, *linha, *coluna, token->valor);
-			break;
-		case OPERADOR:
-			if (token->ID != OP_SUB) print_error(ERROR_PARSER_SYN_OPSTART, *linha, *coluna, token->valor);
-			read_token(codigo, linha, coluna, index, token);
-
-			if (token->TYPE == NUMERO || token->TYPE == IDENTIFICADOR) goto repeat;
-			else print_error(ERROR_PARSER_SYN_IDENMAT, *linha, *coluna, token->valor);
-		case CHAVE:
+		case COMPARADOR:
+			if(analisador_expressao_matematica(codigo, linha, coluna, index, token) == 0) print_error(ERROR_PARSER_SYN_NOTMATH, *linha, *coluna, token->valor);
 			if (token->ID == THEN || token->ID == DO) break;
 		default:
-			print_error(ERROR_PARSER_SYN_NOTEXPR, *linha, *coluna, token->valor);			
+			print_error(ERROR_PARSER_SYN_NOTCOMP, *linha, *coluna, token->valor);			
 	}
-
-
-	if (parenteses != 0) print_error(ERROR_PARSER_SYN_ODDBRACK, *linha, *coluna, token->valor);
 }
 
 int main (int argc, char* argv[]) {
@@ -237,13 +206,14 @@ int main (int argc, char* argv[]) {
 	Index *index = NULL; //Index é a lista usada para guardar identificadores.
 	Token token;
 
+	int encap = 0; //Valor responsavel por manter a quantidade de BEGIN e END certa.
+
 	//#### Loop Principal!
 	//Se for editar o codigo por favor crie uma branch com o GIT e faça suas mudanças la, depois peça que ela seja aprovada
 	//pelo github!
 	do {
 		//Pra fazer! Infelizmente o switch abaixo tem que tornar em uma função para poder fazer o
 		//Analaisador Sintatico de uma forma mais comfortavel.
-//		token = token_analyzer(codigo, &coluna, &index);
 		read_token(codigo, &linha, &coluna, index, &token);
 		switch (token.ID) {
 			case NIL:
@@ -282,8 +252,29 @@ int main (int argc, char* argv[]) {
 			case OP_EQ:
 				analisador_expressao_matematica(codigo, &linha, &coluna, index, &token);
 				break;
+			case IF:
+				analisador_expressao_logico(codigo, &linha, &coluna, index, &token);
+				if (token.ID != THEN) print_error(ERROR_PARSER_SYN_NOTTHEN, linha, coluna, token.valor);
+				encap++;
+				break;
+			case WHILE:
+				analisador_expressao_logico(codigo, &linha, &coluna, index, &token);
+				if (token.ID != DO) print_error(ERROR_PARSER_SYN_NOTDO, linha, coluna, token.valor);
+				encap++;
+				break;
+			case BEGIN:
+				encap++;
+				break;
+			case END:
+				encap--;
+				break;
 		}
 	} while (strcmp(token.valor, "") != 0);
+
+	if (encap != 0) {
+		char num[4];
+		print_error(ERROR_PARSER_SYN_ODDEND, linha, coluna, itoa(encap, num, 10));
+	}
 
 	printf("Tabela final de valores identificadores: ");
 	show_index(index);

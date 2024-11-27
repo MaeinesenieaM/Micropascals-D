@@ -125,9 +125,40 @@ void token_print(FILE *file, Token *token);
 #define ERROR_PARSER_SYN_NOSEMICO	210	//ESPERADO FIM DA EXPRESSAO COM THEN OU DO, NAO {;}!
 #define ERROR_PARSER_SYN_OPSTART	211 //OPERADOR ILEGAL NO COMECO DE ESPRESSAO!
 
+#define ERROR_PARSER_SYN_NOTDO		212	//ESPERADO CHAVE {DO}!
+#define ERROR_PARSER_SYN_NOTTHEN	213 //ESPERADO CHAVE {THEN}!
+#define ERROR_PARSER_SYN_ODDEND		214 //QUANTIDADE DE {BEGIN} E {END} ILEGAL!
+
+#define ERROR_PARSER_SYN_NOTMATH	215 //ESPERADO ESPRESSAO MATEMATICA!
+
+//Função responsavel pelo alerta de erros.
 void print_error(int error, int linha, int coluna, const char *string);
+
+//Diferente de strcat normal, essa função faz com que seja possível cocatenar strings com letras sem
+//ter problemas de memoria.
+void strcat_char(char *string, char letra);
+
+//Essa função aumenta o valor int a cada fgetc de um arquivo.
+void getchar_plus(FILE **file, char *letra, int *cont);
+
+//Junta uma letra com uma string e substitui com a proxima letra do arquivo. Além de aumentar um contador.
+void switch_char(FILE *file, char *letra, int *cont, char string[]);
+
+//Retorna um token de erro.
+Token token_error(int codigo, char *string);
+
+//Ler um arquivo e retorna um token identificado, junto com aumento do valor COLUNA e LINHA a cada CHAR lido do arquivo.
+void read_token(FILE *codigo, int *linha, int *coluna, Index *index, Token *token);
+
+//Analisa uma sequência de tokens em uma expressão matematica, e retorna a quantidade de tokens significativos.
+//Retorna 0 se não encontrar nenhuma expressão.
+int analisador_expressao_matematica(FILE *codigo, int *linha, int *coluna, Index *index, Token *token);
+
+//Depende de duas sequências matematicas e um comparador logico. Usado para leitura de condições.
+void analisador_expressao_logico(FILE *codigo, int *linha, int *coluna, Index *index, Token *token);
 
 //A função pricipal para obter token atraves de um arquivo.
 Token token_analyzer(FILE *file, int *coluna, Index **index);
-
+//Função que ler arquivo, pula caracteres inuteis e ajusta linhas e colunas.
+void read_token(FILE *codigo, int *linha, int *coluna, Index *index, Token *token);
 #endif

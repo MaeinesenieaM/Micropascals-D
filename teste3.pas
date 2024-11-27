@@ -3,14 +3,10 @@ var
     x:integer;
     z:real;
 begin
-    z := 3;
+    z := 4;
     x:=5;
-    while x<5 do
-    begin
+    while x = z + 1 do
         z:=z+1;
-        x:=z+2 if;
+        x:=z+2;
     end
-
-    if 
-
 end.
